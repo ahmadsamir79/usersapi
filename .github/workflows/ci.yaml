@@ -69,6 +69,28 @@ jobs:
       # The default PostgreSQL port
         POSTGRES_PORT: 5432
 
+    - name: Run Tests
+      run: python -m nose tests.py
+      env:
+      # The hostname used to communicate with the PostgreSQL service container
+        POSTGRES_HOST: localhost
+      # The default PostgreSQL port
+        POSTGRES_PORT: 5432
+# New code starts here
+- name: Run Bandit security scanner
+      run: bandit -r . -f sarif -o bandit-report.sarif || echo "BANDIT_FAIL=true" >> "$GITHUB_ENV"
+
+- name: Upload Bandit scan results to Github Code Scanning
+  uses: github/codeql-action/upload-sarif@v2
+  with:
+    sarif_file: bandit-report.sarif
+
+- name: Exit if Bandit fails
+  run: | 
+    if [ -n "$BANDIT_FAIL" ]; then
+      exit 1 
+    fi
+
   docker-build:
     needs: lint-and-test
     runs-on: ubuntu-latest
@@ -104,4 +126,3 @@ jobs:
   #     with:
   #       push: true
   #       tags: yourusername/user-management-api:latest
-

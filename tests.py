@@ -61,6 +61,7 @@ class UserManagementTestCase(unittest.TestCase):
         self.assertEqual(user_data["username"], self.test_user["username"])
         self.assertEqual(user_data["email"], self.test_user["email"])
         self.assertEqual(user_data["full_name"], self.test_user["full_name"])
+
     def test_register_duplicate_user(self):
         # Register first user
         self.client.post("/register", json=self.test_user)
